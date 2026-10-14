@@ -49,4 +49,34 @@ const print=document.createElement('button');print.className='secondary';print.t
 };
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>document.getElementById('executiveReports')?.classList.add('hidden')));
 })();
+</script><script>
+(function(){
+const oldRender=render;
+render=function(){
+oldRender();
+const isExec=current?.role==='executive',nav=document.querySelector('[data-tab="schools"]').parentElement;
+let buttons=document.getElementById('executiveNavigation');
+if(!buttons){buttons=document.createElement('div');buttons.id='executiveNavigation';buttons.className='grid';buttons.style.cssText='width:100%;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px';nav.parentNode.insertBefore(buttons,nav.nextSibling)}
+nav.classList.toggle('hidden',isExec);buttons.classList.toggle('hidden',!isExec);
+for(const id of ['executivePanel','executiveReports'])document.getElementById(id)?.classList.add('hidden');
+if(!isExec){buttons.replaceChildren();return}
+const sections=[['overview','الرئيسية'],['schools','مدارسي'],['performance','أداء المدارس'],['records','سجلاتي'],['approvals','مركز الاعتمادات'],['directors','حسابات المديرين'],['reports','التقارير'],['alerts','الإشعارات'],['account','حسابي']];
+let extra=document.getElementById('executiveUnified');if(!extra){extra=document.createElement('section');extra.id='executiveUnified';extra.className='card hidden';document.getElementById('app').append(extra)}
+const principals=Array.from({length:5},(_,i)=>{const school=i+1,account=accounts.find(x=>x.role==='principal'&&x.school===school),records=recordsFor(account),data=dataFor(account),ready=records.filter((_,j)=>data[j]?.status==='ready').length,approved=records.filter((_,j)=>data[j]?.approval==='approved').length;return {school,account,records,data,ready,approved,percent:Math.round(ready/records.length*100)}});
+const el=(tag,value)=>{const n=document.createElement(tag);if(value!==undefined)n.textContent=value;return n};
+const add=(root,tag,value)=>{const n=el(tag,value);root.append(n);return n};
+const open=(id)=>{for(const section of document.querySelectorAll('#app>section'))section.classList.add('hidden');const destination=id==='overview'||id==='records'||id==='schools'?$(id):extra;destination.classList.remove('hidden');buttons.querySelectorAll('button').forEach(b=>b.classList.toggle('secondary',b.dataset.view!==id));if(destination===extra)draw(id)};
+buttons.replaceChildren();sections.forEach(([id,label])=>{const b=el('button',label);b.dataset.view=id;b.className='secondary';b.onclick=()=>open(id);buttons.append(b)});
+function draw(id){
+extra.replaceChildren();
+if(id==='performance'){add(extra,'h2','أداء المدارس');add(extra,'p','مقارنة السجلات الفعلية في البيئة التجريبية، وليست تقييمًا رسميًا.').className='muted';const search=add(extra,'input');search.type='search';search.placeholder='ابحث عن مدرسة';const result=add(extra,'div');const paint=()=>{result.replaceChildren();principals.filter(s=>schoolName(s.school).includes(search.value)).sort((a,b)=>b.percent-a.percent).forEach(s=>{const card=add(result,'div');card.className='item';add(card,'b',schoolName(s.school)+' — '+s.percent+'%');const bar=add(card,'progress');bar.max=100;bar.value=s.percent;bar.style.width='100%';add(card,'p','جاهزة: '+(s.ready-s.approved)+' | معتمدة: '+s.approved+' | نواقص: '+(s.records.length-s.ready));const btn=add(card,'button','عرض الاعتمادات');btn.onclick=()=>open('approvals')})};search.oninput=paint;paint()}
+if(id==='approvals'){add(extra,'h2','مركز الاعتمادات');add(extra,'p','اعتماد تجريبي لسجلات مديري المدارس الخمس فقط.').className='muted';let count=0;principals.forEach(s=>s.records.forEach((record,i)=>{const entry=s.data[i];if(entry?.status!=='ready'||entry.approval==='approved')return;count++;const card=add(extra,'div');card.className='item';add(card,'b',schoolName(s.school)+' — '+record.title);add(card,'p',entry.desc||'لا يوجد وصف');const notes=add(card,'textarea');notes.placeholder='ملاحظات الإعادة';for(const [label,status] of [['اعتماد','approved'],['إعادة بملاحظات','returned']]){const b=add(card,'button',label);if(status==='returned')b.className='secondary';b.style.margin='5px';b.onclick=()=>{if(status==='returned'&&!notes.value.trim()){alert('ملاحظات الإعادة مطلوبة');return}const all=readData();all[s.account.id]||={};all[s.account.id][i]={...entry,approval:status,approvalNote:notes.value.trim(),status:status==='returned'?'draft':'ready'};if(saveData(all))render();else alert('تعذر الحفظ')}}}));if(!count)add(extra,'p','لا توجد طلبات اعتماد معلقة')}
+if(id==='directors'){add(extra,'h2','حسابات مديري المدارس');add(extra,'p','عرض الحسابات التجريبية. تعيين المدير وإعادة كلمة المرور الفعلية غير متاحين في هذه النسخة.').className='muted';principals.forEach(s=>{const card=add(extra,'div');card.className='item';add(card,'b',s.account.title);add(card,'p',schoolName(s.school)+' — '+s.account.id)})}
+if(id==='reports'){add(extra,'h2','تقارير المدارس');const wrap=add(extra,'div');wrap.style.overflowX='auto';const table=add(wrap,'table');table.style.cssText='width:100%;border-collapse:collapse';const tr=add(table,'tr');for(const title of ['المدرسة','الإنجاز','جاهزة','معتمدة','نواقص'])add(tr,'th',title).style.padding='10px';principals.forEach(s=>{const tr=add(table,'tr');for(const val of [schoolName(s.school),s.percent+'%',s.ready-s.approved,s.approved,s.records.length-s.ready]){const td=add(tr,'td',String(val));td.style.cssText='padding:10px;border-bottom:1px solid #d8e6e8;white-space:nowrap'}});const btn=add(extra,'button','طباعة التقرير');btn.onclick=()=>window.print()}
+if(id==='alerts'){add(extra,'h2','الإشعارات');const pending=principals.reduce((n,s)=>n+s.ready-s.approved,0);add(extra,'p',pending?'طلبات اعتماد معلقة: '+pending:'لا توجد طلبات اعتماد معلقة حاليًا');add(extra,'p','لا توجد تنبيهات حقيقية أو طلبات استعادة في هذه البيئة التجريبية.').className='muted'}
+if(id==='account'){add(extra,'h2','حسابي');add(extra,'p','الاسم: مدير تنفيذي تجريبي');add(extra,'p','نطاق الإشراف: المدارس التجريبية الخمس');add(extra,'p','الحساب تجريبي ولا يسمح بتغيير صلاحيات أو كلمات مرور مستخدمين حقيقيين.').className='muted'}
+}
+open('overview');
+};
+})();
 </script></body></html>
