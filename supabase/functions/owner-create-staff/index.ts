@@ -15,9 +15,11 @@ Deno.serve(async req=>{
  if(ownerError||!owner)return reply({error:'مالك المنصة فقط'},403);
  let p:any;try{p=await req.json()}catch{return reply({error:'طلب غير صالح'},400)}
  const {username,password,full_name,org_id,school_id,role}=p||{};
- if(typeof username!=='string'||!/^\d{10}$/.test(username)||typeof password!=='string'||password.length<8||typeof full_name!=='string'||full_name.trim().length<3||typeof org_id!=='string'||typeof school_id!=='string'||!allowed.has(role))return reply({error:'تحقق من الحقول'},400);
+ if(typeof username!=='string'||!/^\d{10}$/.test(username)||typeof password!=='string'||password.length<8||typeof full_name!=='string'||full_name.trim().length<3||typeof org_id!=='string'||(role!=='executive_director'&&typeof school_id!=='string')||!allowed.has(role))return reply({error:'تحقق من الحقول'},400);
+ if(role!=='executive_director'){
  const {data:school,error:schoolError}=await admin.from('schools').select('id').eq('id',school_id).eq('org_id',org_id).maybeSingle();
  if(schoolError||!school)return reply({error:'المدرسة لا تتبع الجهة'},400);
+ }else{const {data:org,error:orgError}=await admin.from('organizations').select('id').eq('id',org_id).maybeSingle();if(orgError||!org)return reply({error:'الجهة التنظيمية غير موجودة'},400)}
  // Internal auth identifier only; never shown to staff or accepted as a user-entered email.
  const internalId='staff-'+username+'@accounts.invalid';
  const {data:created,error:createError}=await admin.auth.admin.createUser({email:internalId,password,email_confirm:true,user_metadata:{must_change_password:true}});
@@ -29,7 +31,7 @@ Deno.serve(async req=>{
   await admin.from('profiles').delete().eq('user_id',id);
   await admin.auth.admin.deleteUser(id);
  };
- const {error:profileError}=await admin.from('profiles').insert({user_id:id,org_id,school_id,full_name:full_name.trim(),active:true});
+ const {error:profileError}=await admin.from('profiles').insert({user_id:id,org_id,school_id:role==='executive_director'?null:school_id,full_name:full_name.trim(),active:true});
  if(profileError){await rollback();return reply({error:'تعذر إنشاء الملف الشخصي'},500)}
  const {error:roleError}=await admin.from('user_roles').insert({user_id:id,role});
  if(roleError){await rollback();return reply({error:'تعذر إسناد الصلاحية'},500)}
