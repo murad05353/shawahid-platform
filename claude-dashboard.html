@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>شواهد — لوحة التحكم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--p:#0c4a53;--p2:#083a42;--t:#2bb3ad;--tl:#e6f6f5;--bg:#f2f5f6;--c:#fff;--tx:#13272c;--m:#637a80;--b:#e2ebed;--r:18px;--warn:#c2410c;--sh:0 1px 2px rgba(12,74,83,.05),0 6px 20px rgba(12,74,83,.06)}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
+button,input,select{font:inherit}
+.app{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100dvh;transition:grid-template-columns .25s}
+.app.col{grid-template-columns:84px minmax(0,1fr)}
+aside{background:linear-gradient(180deg,var(--p),var(--p2));color:#fff;padding:22px 16px;position:sticky;top:0;height:100dvh;display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;padding:4px 8px}
+.brand svg{width:38px;height:38px;flex:none}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;color:#cfe6e8;font-size:15px;cursor:pointer}
+.nav a.on{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.nav svg{width:20px;height:20px;flex:none}
+.fold{margin-top:auto;background:none;border:1px solid rgba(255,255,255,.2);color:#cfe6e8;border-radius:12px;padding:10px;cursor:pointer;display:flex;gap:8px;justify-content:center;align-items:center}
+.fold svg{width:18px;height:18px}
+.app.col .brand span,.app.col .nav span,.app.col .fold span{display:none}
+.app.col .nav a{justify-content:center}
+main{min-width:0;padding:22px 28px 40px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.who{display:flex;align-items:center;gap:12px;min-width:0}
+.who b{display:block;font-size:16px}
+.who small{display:block;color:var(--m);font-size:13px}
+.av{width:46px;height:46px;border-radius:50%;background:var(--tl);color:var(--p);display:grid;place-items:center;font-weight:700;font-size:18px;border:2px solid var(--t);flex:none}
+.tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dates{display:flex;flex-direction:column;font-size:12.5px;color:var(--m);line-height:1.6}
+.search{display:flex;align-items:center;gap:8px;background:var(--c);border:1px solid var(--b);border-radius:12px;padding:0 12px;height:44px;min-width:220px}
+.search svg{width:18px;height:18px;color:var(--m);flex:none}
+.search input{border:0;outline:0;flex:1;background:transparent;min-width:0}
+.ib{position:relative;width:44px;height:44px;border-radius:12px;border:1px solid var(--b);background:var(--c);display:grid;place-items:center;cursor:pointer;color:var(--p);flex:none}
+.ib svg{width:20px;height:20px}
+.dot{position:absolute;top:10px;inset-inline-end:10px;width:8px;height:8px;border-radius:50%;background:var(--t)}
+.hero{background:linear-gradient(120deg,var(--p),#136b76);color:#fff;border-radius:24px;padding:26px 28px;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:18px;box-shadow:var(--sh)}
+.hero h1{margin:0 0 6px;font-size:26px}
+.hero p{margin:0;color:#d4eeef;line-height:1.8;max-width:560px}
+.preview{background:rgba(255,255,255,.12);border-radius:14px;padding:12px 14px;font-size:13px;min-width:200px}
+.preview select{margin-top:6px;width:100%;height:38px;border-radius:10px;border:0;padding:0 8px;background:#fff;color:var(--tx)}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--c);border-radius:var(--r);padding:18px;box-shadow:var(--sh);border:1px solid var(--b);min-width:0}
+.kpi .ic{width:38px;height:38px;border-radius:12px;background:var(--tl);display:grid;place-items:center;color:var(--p);margin-bottom:10px}
+.kpi .ic svg{width:20px;height:20px}
+.kpi small{color:var(--m);font-size:13px}
+.kpi b{display:block;font-size:28px;margin-top:4px;color:var(--p)}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px}
+.card{background:var(--c);border:1px solid var(--b);border-radius:var(--r);padding:20px;box-shadow:var(--sh);min-width:0}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+.ch h2{font-size:17px;margin:0}
+.ch a{color:var(--t);font-size:14px;cursor:pointer;font-weight:600}
+.empty{text-align:center;padding:24px 10px;color:var(--m)}
+.empty .ic{width:52px;height:52px;margin:0 auto 10px;border-radius:16px;background:var(--tl);display:grid;place-items:center;color:var(--t)}
+.empty .ic svg{width:24px;height:24px}
+.empty b{display:block;color:var(--tx);margin-bottom:4px}
+.task{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--b);font-size:15px}
+.tag{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--tl);color:var(--p);white-space:nowrap}
+.tag.late{background:#fff1ec;color:var(--warn)}
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.file{border-radius:16px;overflow:hidden;border:1px solid var(--b);background:#fff;text-align:start;cursor:pointer;padding:0;color:var(--tx)}
+.file .cv{height:96px;background:linear-gradient(135deg,var(--p),var(--t));color:#fff;padding:12px;font-weight:600;font-size:15px}
+.file .bd{padding:12px}
+.file small{color:var(--m)}
+.pbar{height:6px;background:var(--b);border-radius:9px;margin-top:8px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--t)}
+.dwrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap;justify-content:center}
+.ring{position:relative;width:150px;height:150px;flex:none}
+.ring svg{width:150px;height:150px;transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;font-weight:700;color:var(--p)}
+.legend{display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--m)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:8px}
+.note{font-size:13px;color:var(--m);text-align:center;margin-top:12px}
+.qa{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qa button{background:var(--tl);color:var(--p);border:0;border-radius:14px;padding:14px;font-weight:600;cursor:pointer;min-height:52px;text-align:start}
+.act{padding:10px 0;border-bottom:1px solid var(--b);font-size:14px}
+.act small{display:block;color:var(--m);margin-top:2px}
+.bottom{display:none}
+@media (min-width:900px){
+ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .grid2{grid-template-columns:1fr 1fr}
+}
+@media (max-width:899px){
+ .app,.app.col{grid-template-columns:1fr}
+ aside{display:none}
+ main{padding:16px 14px 112px}
+ .search{min-width:0;flex:1}
+ .tools{width:100%}
+ .dates{display:none}
+ .hero{padding:20px}
+ .hero h1{font-size:22px}
+ .preview{width:100%}
+ .bottom{display:flex;position:fixed;bottom:0;inset-inline:0;background:var(--c);border-top:1px solid var(--b);padding:8px 8px calc(8px + env(safe-area-inset-bottom));justify-content:space-around;z-index:10}
+ .bottom a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--m);min-height:56px;border-radius:14px;cursor:pointer}
+ .bottom a.on{color:var(--p);font-weight:600;background:var(--tl)}
+ .bottom svg{width:22px;height:22px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside>
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="14" fill="#2bb3ad"/><path d="M12 14c6-2 10-1 12 2 2-3 6-4 12-2v20c-6-2-10-1-12 2-2-3-6-4-12-2z" fill="#fff"/><path d="m18 24 4 4 8-8" stroke="#0c4a53" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>شواهد</span>
+    </div>
+    <nav class="nav" id="sideNav"></nav>
+    <button class="fold" id="fold" aria-label="طي القائمة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg><span>طي القائمة</span></button>
+  </aside>
+
+  <main>
+    <header class="top">
+      <div class="who">
+        <div class="av" id="av">ش</div>
+        <div><b id="uname">مستخدم</b><small id="urole"></small><small id="uschool"></small></div>
+      </div>
+      <div class="tools">
+        <div class="dates"><span id="greg"></span><span id="hijri"></span></div>
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/></svg>
+          <input type="search" placeholder="ابحث عن سجل أو شاهد" aria-label="بحث">
+        </label>
+        <button class="ib" aria-label="الإشعارات"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/></svg><i class="dot" id="notif" hidden></i></button>
+        <button class="ib" aria-label="إعدادات الحساب"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1 id="hi">مرحبًا بك</h1>
+        <p id="welcome"></p>
+      </div>
+      <div class="preview">
+        معاينة الدور (للتصميم فقط)
+        <select id="roleSel" aria-label="معاينة الدور"></select>
+      </div>
+    </section>
+
+    <section class="kpis" id="kpis"></section>
+
+    <div class="grid2">
+      <section class="card" id="tasks"></section>
+      <section class="card" id="charts"></section>
+    </div>
+
+    <section class="card" style="margin-bottom:16px">
+      <div class="ch"><h2>ملفاتي الإلكترونية</h2><a>عرض الكل</a></div>
+      <div id="files"></div>
+    </section>
+
+    <div class="grid2">
+      <section class="card" id="activity"></section>
+      <section class="card" id="quick"></section>
+    </div>
+  </main>
+</div>
+
+<nav class="bottom" id="bottomNav" aria-label="التنقل الرئيسي"></nav>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const ICO = {
+  home:'<path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/>',
+  folder:'<path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  rec:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M9 12h6M9 16h6"/>',
+  cert:'<circle cx="12" cy="9" r="6"/><path d="m9 14-2 7 5-3 5 3-2-7"/>',
+  rep:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 11a4 4 0 1 0 0-8M22 21a7 7 0 0 0-5-6.7"/>',
+  inbox:'<path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 2h6l1-2h5"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/>',
+  pulse:'<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>'
+};
+const svg = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[n]||''}</svg>`;
+
+const NAV = {home:['الرئيسية','home'], files:['ملفاتي','folder'], records:['السجلات','rec'], certs:['الشواهد','cert'], reports:['التقارير','rep'], users:['المستخدمون','users']};
+const KL = {schools:'المدارس', users:'المستخدمون', records:'إجمالي السجلات', done:'المكتمل', pending:'قيد الإنجاز', late:'المتأخر', certs:'الشواهد المرفوعة', progress:'نسبة الإنجاز'};
+const KI = {schools:'home', users:'users', records:'rec', done:'check', pending:'pulse', late:'bell', certs:'cert', progress:'rep'};
+
+// الأدوار: تحدد الأقسام والمؤشرات والإجراءات المعروضة فقط.
+// الصلاحيات الفعلية تُحدَّد من النظام الحالي، ولا يُعرض هنا أي إجراء غير مفعّل.
+const ROLES = {
+  owner:       {t:'مالك المنصة', nav:['home','reports','users'], kpi:['schools','users','records','done'], w:'نظرة شاملة على الجهات والمدارس والمستخدمين وحالة تشغيل المنصة.', q:['إدارة المستخدمين','التقارير']},
+  exec:        {t:'المدير التنفيذي', nav:['home','files','reports'], kpi:['schools','records','done','late'], w:'متابعة المدارس التابعة لك ومقارنة إنجازها وتقاريرها.', q:['مقارنة المدارس','التقارير']},
+  principal:   {t:'مدير المدرسة', nav:['home','files','records','certs','users','reports'], kpi:['records','done','certs','late'], w:'متابعة ملفات المدرسة والسجلات والموظفين والمهام.', q:['إضافة مستخدم','التقارير','الشواهد']},
+  deputy_edu:  {t:'وكيل الشؤون التعليمية', nav:['home','files','records','reports'], kpi:['records','done','pending','late'], w:'متابعة سجلات المعلمين وحالة اعتمادها ومهام المراجعة.', q:['مراجعة السجلات','التقارير']},
+  deputy_stu:  {t:'وكيل شؤون الطلاب', nav:['home','files','records','reports'], kpi:['records','done','pending','late'], w:'متابعة السجلات والشواهد الخاصة بشؤون الطلاب.', q:['السجلات','التقارير']},
+  deputy_sch:  {t:'وكيل الشؤون المدرسية', nav:['home','files','records','reports'], kpi:['records','done','pending','late'], w:'متابعة السجلات والمهام المدرسية المطلوبة.', q:['السجلات','التقارير']},
+  counselor:   {t:'الموجّه الطلابي', nav:['home','files','records','certs'], kpi:['records','done','pending','certs'], w:'متابعة ملفات الإرشاد الطلابي وسجلاتها وشواهدها.', q:['سجل جديد','إضافة شاهد']},
+  activity:    {t:'رائد النشاط', nav:['home','files','records','certs'], kpi:['records','done','pending','certs'], w:'متابعة ملفات النشاط الطلابي وشواهدها ونسب إنجازها.', q:['سجل جديد','إضافة شاهد']},
+  teacher:     {t:'المعلم', nav:['home','files','records','certs'], kpi:['records','done','progress','certs'], w:'ملف إنجازك وسجلاته الـ24 والمهام المطلوب استكمالها.', q:['فتح ملفي','إضافة شاهد']}
+};
+
+function kpi(k, v){
+  const val = v == null ? '—' : (k === 'progress' ? v + '%' : v);
+  return `<div class="kpi"><div class="ic">${svg(KI[k])}</div><small>${KL[k]}</small><b>${val}</b></div>`;
+}
+function empty(icon, title, text){
+  return `<div class="empty"><div class="ic">${svg(icon)}</div><b>${title}</b><span>${text}</span></div>`;
+}
+function donut(k){
+  const a = k.done||0, p = k.pending||0, l = k.late||0, t = a+p+l, C = 2*Math.PI*52;
+  let off = 0, segs = '';
+  if (t) [[a,'#2bb3ad'],[p,'#0c4a53'],[l,'#c2410c']].forEach(([v,c]) => {
+    if (!v) return;
+    const len = v/t*C;
+    segs += `<circle cx="60" cy="60" r="52" fill="none" stroke="${c}" stroke-width="14" stroke-dasharray="${len} ${C}" stroke-dashoffset="${-off}"/>`;
+    off += len;
+  });
+  return `<div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="#e2ebed" stroke-width="14"/>${segs}</svg><div class="c">${t ? Math.round(a/t*100)+'%' : '—'}</div></div>`;
+}
+
+function navHTML(list, cur){
+  return list.map(id => `<a class="${id===cur?'on':''}" data-id="${id}">${svg(NAV[id][1])}<span>${NAV[id][0]}</span></a>`).join('');
+}
+function bottomHTML(list, cur){
+  return list.slice(0,5).map(id => `<a class="${id===cur?'on':''}" data-id="${id}">${svg(NAV[id][1])}<span>${NAV[id][0]}</span></a>`).join('');
+}
+
+function render(u = {}, d = {}){
+  const role = ROLES[u.role] || ROLES.teacher;
+  const k = d.kpi || {};
+  const first = (u.name || '').trim().split(/\s+/)[0];
+
+  $('#uname').textContent = u.name || 'مستخدم';
+  $('#urole').textContent = role.t;
+  $('#uschool').textContent = u.school || '';
+  $('#av').textContent = first ? first[0] : 'ش';
+  $('#hi').textContent = first ? `مرحبًا ${first}` : 'مرحبًا بك';
+  $('#welcome').textContent = role.w;
+
+  $('#kpis').innerHTML = role.kpi.map(x => kpi(x, k[x])).join('');
+
+  const tasks = d.tasks || [];
+  $('#tasks').innerHTML = `<div class="ch"><h2>مركز المهام والأولويات</h2></div>` + (tasks.length
+    ? tasks.map(t => `<div class="task"><span>${esc(t.t)}</span><span class="tag ${t.late?'late':''}">${esc(t.due||'')}</span></div>`).join('')
+    : empty('inbox', 'لا توجد مهام مطلوبة الآن', 'ستظهر هنا الأعمال والاعتمادات التي تحتاج إجراءك.'));
+
+  const hasData = (k.done||0)+(k.pending||0)+(k.late||0) > 0;
+  $('#charts').innerHTML = `<div class="ch"><h2>توزيع حالات السجلات</h2></div>
+    <div class="dwrap">${donut(k)}
+      <div class="legend">
+        <span><i style="background:#2bb3ad"></i>مكتمل</span>
+        <span><i style="background:#0c4a53"></i>قيد الإنجاز</span>
+        <span><i style="background:#c2410c"></i>متأخر</span>
+      </div>
+    </div>
+    ${hasData ? '' : '<p class="note">تظهر الرسوم عند توفر بيانات السجلات.</p>'}`;
+
+  const files = d.files || [];
+  $('#files').innerHTML = files.length
+    ? `<div class="files">${files.map(f => `<button class="file"><div class="cv">${esc(f.title)}</div><div class="bd"><small>${esc(f.sub||'')}</small><div class="pbar"><i style="width:${Math.min(100,f.pct||0)}%"></i></div></div></button>`).join('')}</div>`
+    : empty('folder', 'لا توجد ملفات بعد', 'ستظهر ملفات الإنجاز هنا فور إنشائها.');
+
+  const act = d.activity || [];
+  $('#activity').innerHTML = `<div class="ch"><h2>النشاط الأخير</h2></div>` + (act.length
+    ? act.map(a => `<div class="act">${esc(a.t)}<small>${esc(a.time||'')}</small></div>`).join('')
+    : empty('pulse', 'لا يوجد نشاط حديث', 'ستظهر هنا السجلات والشواهد التي تُعدَّل.'));
+
+  $('#quick').innerHTML = `<div class="ch"><h2>الوصول السريع</h2></div><div class="qa">${role.q.map(q => `<button>+ ${esc(q)}</button>`).join('')}</div>`;
+
+  $('#sideNav').innerHTML = navHTML(role.nav, 'home');
+  $('#bottomNav').innerHTML = bottomHTML(role.nav, 'home');
+  $('#notif').hidden = !(d.notifications > 0);
+}
+
+function setDates(){
+  const now = new Date();
+  $('#greg').textContent = now.toLocaleDateString('ar-SA', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  try {
+    $('#hijri').textContent = now.toLocaleDateString('ar-SA-u-ca-islamic-umalqura', {day:'numeric', month:'long', year:'numeric'});
+  } catch (e) { $('#hijri').textContent = ''; }
+}
+
+function init(){
+  setDates();
+  const sel = $('#roleSel');
+  sel.innerHTML = Object.entries(ROLES).map(([id, r]) => `<option value="${id}">${r.t}</option>`).join('');
+  sel.onchange = () => render({role: sel.value}, {});
+  $('#fold').onclick = () => $('#app').classList.toggle('col');
+  sel.value = 'owner';
+  render({role:'owner'}, {});
+}
+
+// للدمج: استدعِ render(user, data) بعد تسجيل الدخول ببيانات حقيقية من النظام الحالي.
+// user = {name, school, role}، data = {kpi, tasks, files, activity, notifications}
+window.ShawahidDashboard = { render, ROLES };
+init();
+</script>
+</body>
+</html>
