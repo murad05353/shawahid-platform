@@ -2,7 +2,55 @@
 const URL='https://svfoinsspuqxkxlcvqmq.supabase.co',KEY='sb_publishable_M3rwpCmiIMgOGswCqe3xCQ_MJWb4IUy',e=id=>document.getElementById(id);let jwt=null,templateData=[],organizationData=[];
 const authHeaders=()=>({apikey:KEY,Authorization:'Bearer '+jwt});
 let claudeOwnerData=null;
-function renderClaudeTeacher(){const frame=e('claudeTeacher');if(!frame||!templateData.length)return;try{const w=frame.contentWindow,d=w.document;if(!w.TeacherFile)return;const records=templateData.filter(x=>x.role==='teacher').slice(0,24).map((x,i)=>({id:i+1,title:x.title,status:'draft',desc:'',notes:'',files:[]}));if(records.length!==24)return;w.TeacherFile.load({teacher:{name:'',school:'',year:''},records,approval:false,uploads:false});d.querySelectorAll('input,textarea,.seg button').forEach(x=>{x.disabled=true;x.readOnly=true});if(!d.documentElement.dataset.previewLocked){d.documentElement.dataset.previewLocked='1';d.addEventListener('click',ev=>{if(ev.target.closest('.seg button')){ev.preventDefault();ev.stopImmediatePropagation()}},true);d.addEventListener('input',ev=>{if(ev.target.matches('input,textarea')){ev.preventDefault();ev.stopImmediatePropagation()}},true);const lock=new w.MutationObserver(()=>d.querySelectorAll('input,textarea,.seg button').forEach(x=>{x.disabled=true;x.readOnly=true}));lock.observe(d.getElementById('book'),{childList:true,subtree:true})}if(!d.getElementById('realTemplateNotice')){const note=d.createElement('p');note.id='realTemplateNotice';note.textContent='معاينة القوالب الأصلية فقط — لا توجد سجلات معلم محفوظة في هذا العرض.';note.style.cssText='padding:12px;text-align:center;background:#e6f6f5;color:#0c4a53;margin:0';d.body.prepend(note)}}catch(err){console.warn('تعذر عرض ملف Claude',err)}}
+let teacherBridgeGeneration=0;
+async function renderClaudeTeacher(){
+ const frame=e('claudeTeacher');if(!frame||!jwt||!templateData.length)return;
+ const w=frame.contentWindow,d=w.document;if(!w?.TeacherFile)return;
+ const gen=++teacherBridgeGeneration;
+ const templates=templateData.filter(x=>x.role==='teacher').slice(0,24);
+ if(templates.length!==24)return;
+ const notice=()=>{let n=d.getElementById('realTemplateNotice');if(!n){n=d.createElement('p');n.id='realTemplateNotice';n.style.cssText='padding:12px;text-align:center;background:#e6f6f5;color:#0c4a53;margin:0';d.body.prepend(n)}return n};
+ const records=templates.map((t,i)=>({id:i+1,title:t.title,status:'draft',desc:'',notes:'',files:[]}));
+ let teacher=null,school=null,entries=[],year=String(new Date().getFullYear());
+ try{
+  const auth=await fetch(URL+'/auth/v1/user',{headers:authHeaders()});if(!auth.ok)throw Error('انتهت جلسة الدخول');
+  const user=await auth.json();const profiles=await get('profiles','user_id,school_id,active');const roles=await get('user_roles','user_id,role');
+  const profile=profiles.find(x=>x.user_id===user.id);
+  if(profile?.active&&profile.school_id&&roles.some(x=>x.user_id===user.id&&x.role==='teacher')){
+   teacher=user.id;school=profile.school_id;
+   entries=await portfolioRequest('GET','?select=id,template_id,description,notes,status,academic_year&teacher_id=eq.'+encodeURIComponent(teacher)+'&school_id=eq.'+encodeURIComponent(school));
+   const last=entries.find(x=>x.academic_year);if(last)year=last.academic_year;
+   for(let i=0;i<templates.length;i++){const entry=entries.find(x=>x.template_id===templates[i].id&&x.academic_year===year);if(entry){records[i].status=entry.status==='ready'?'review':'draft';records[i].desc=entry.description||'';records[i].notes=entry.notes||''}}
+  }
+ }catch(err){console.warn('تعذر قراءة سجلات المعلم',err);notice().textContent='تعذر تحميل بيانات المعلم: '+err.message}
+ if(gen!==teacherBridgeGeneration)return;
+ w.TeacherFile.load({teacher:{name:teacher?'ملف المعلم':'',school:'',year},records,approval:false,uploads:false});
+ const writable=!!teacher&&!!school;
+ notice().textContent=writable?'ملف مرتبط بسجلاتك. يُحفظ الوصف والملاحظات عند مغادرة الحقل، وتُحفظ الحالة عند تغييرها. رفع الشواهد غير مفعّل.':'معاينة القوالب فقط — الحفظ متاح لحساب المعلم المرتبط بمدرسته.';
+ const lock=()=>{if(!writable)d.querySelectorAll('input,textarea,.seg button').forEach(x=>{x.disabled=true;x.readOnly=true});else d.querySelectorAll('[data-p]').forEach(x=>{x.readOnly=true})};
+ lock();
+ if(!d.documentElement.dataset.shBridge){
+  d.documentElement.dataset.shBridge='1';
+  const observer=new w.MutationObserver(lock);observer.observe(d.getElementById('book'),{subtree:true,childList:true});
+  d.addEventListener('click',ev=>{if(!d.documentElement.dataset.shWritable&&ev.target.closest('.seg button')){ev.preventDefault();ev.stopImmediatePropagation()}},true);
+  d.addEventListener('focusout',ev=>{const el=ev.target;if(el.matches('textarea[data-f]')&&d.documentElement.dataset.shWritable)w.parent.postMessage({type:'shawahed-save',index:Number(el.dataset.r),source:'teacher-file'},location.origin)},true);
+  d.addEventListener('click',ev=>{const el=ev.target.closest('.seg button[data-st]');if(el&&d.documentElement.dataset.shWritable)w.parent.postMessage({type:'shawahed-save',index:Number(el.dataset.r),status:el.dataset.st,source:'teacher-file'},location.origin)},false);
+ }
+ d.documentElement.dataset.shWritable=writable?'1':'';
+ frame._saveTeacher=async(index,status)=>{
+  if(!writable||!templates[index])return;
+  const rec=w.TeacherFile.state.records[index];if(!rec)return;
+  const template=templates[index],newStatus=(status||rec.status)==='review'?'ready':'draft';
+  const payload={description:rec.desc||'',notes:rec.notes||'',status:newStatus,academic_year:year};
+  const existing=entries.find(x=>x.template_id===template.id&&x.academic_year===year);
+  try{
+   const result=await portfolioRequest(existing?'PATCH':'POST',existing?'?id=eq.'+encodeURIComponent(existing.id):'',existing?payload:{...payload,teacher_id:teacher,school_id:school,template_id:template.id});
+   if(!existing&&result[0])entries.push(result[0]);
+   notice().textContent='تم حفظ السجل '+(index+1)+' في قاعدة البيانات.';
+  }catch(err){notice().textContent='فشل حفظ السجل '+(index+1)+': '+err.message}
+ };
+}
+window.addEventListener('message',ev=>{if(ev.origin!==location.origin||ev.source!==e('claudeTeacher').contentWindow||ev.data?.type!=='shawahed-save')return;e('claudeTeacher')._saveTeacher?.(ev.data.index,ev.data.status)});
 
 function renderClaudeOwner(){const frame=e('claudeDashboard');if(!frame||!claudeOwnerData||!jwt)return;try{const w=frame.contentWindow,d=w.document;if(!w.ShawahidDashboard)return;w.ShawahidDashboard.render(claudeOwnerData.user,claudeOwnerData.data);e('home').classList.add('claude-ready');if(!d.getElementById('shawahedBridgeStyle')){const style=d.createElement('style');style.id='shawahedBridgeStyle';style.textContent='aside,.bottom,.preview,#quick,.tools .search,.tools .ib,#sideNav{display:none!important}.app{display:block!important}.app>main{width:100%!important;max-width:100%!important;margin:0!important;padding:10px!important}.top{border-radius:14px}';d.head.append(style)}d.querySelectorAll('#quick button').forEach(btn=>{const label=btn.textContent||'';btn.onclick=()=>document.querySelector(label.includes('مستخدم')?'[data-tab="users"]':'[data-tab="templates"]').click()});d.querySelectorAll('#quick button').forEach(btn=>{if((btn.textContent||'').includes('التقارير')){btn.disabled=true;btn.title='التقارير غير مفعلة بعد'}});const link=d.querySelector('#files')?.closest('.card')?.querySelector('.ch a');if(link){link.textContent='عرض القوالب';link.href='#';link.onclick=ev=>{ev.preventDefault();document.querySelector('[data-tab="templates"]').click()}}}catch(err){console.warn('تعذر تحميل تصميم Claude',err)}}
 
