@@ -1,0 +1,69 @@
+/* شواهد — الرموز والمكونات الأساسية
+   مرجع موحد للألوان والخطوط والمسافات. الشاشات الحالية تستخدم القيم نفسها داخل ملفاتها. */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+
+:root{
+  /* الألوان الأساسية */
+  --sh-petrol:#0c4a53;        /* اللون الرئيسي: البترولي الداكن */
+  --sh-petrol-deep:#083a42;   /* تدرجات الخلفيات الداكنة */
+  --sh-teal:#2bb3ad;          /* اللمسة الفيروزية */
+  --sh-teal-soft:#e6f6f5;     /* خلفيات الإبراز الخفيفة */
+
+  /* المحايدة */
+  --sh-bg:#f2f5f6;
+  --sh-surface:#ffffff;
+  --sh-ink:#13272c;
+  --sh-muted:#637a80;
+  --sh-line:#e2ebed;
+
+  /* الحالات */
+  --sh-draft:#c9d6da;
+  --sh-review:#0a6b66;
+  --sh-approved:#15803d;
+  --sh-late:#c2410c;
+
+  /* الشكل */
+  --sh-radius:18px;
+  --sh-radius-sm:12px;
+  --sh-shadow:0 1px 2px rgba(12,74,83,.05),0 8px 24px rgba(12,74,83,.07);
+
+  /* الخط والمسافات */
+  --sh-font:'IBM Plex Sans Arabic',system-ui,sans-serif;
+  --sh-touch:44px;            /* الحد الأدنى لمنطقة اللمس */
+}
+
+html,body{font-family:var(--sh-font);background:var(--sh-bg);color:var(--sh-ink);direction:rtl}
+
+/* الأزرار */
+.sh-btn{min-height:var(--sh-touch);padding:0 18px;border:0;border-radius:var(--sh-radius-sm);background:var(--sh-petrol);color:#fff;font-weight:600;cursor:pointer}
+.sh-btn[disabled]{background:var(--sh-draft);cursor:not-allowed}
+.sh-btn--ghost{background:#fff;color:var(--sh-petrol);border:1px solid var(--sh-line)}
+.sh-btn--ghost[disabled]{background:#f7fafb;color:#9fb3b8}
+
+/* البطاقات والشارات */
+.sh-card{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:var(--sh-radius);box-shadow:var(--sh-shadow);padding:16px}
+.sh-pill{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--sh-teal-soft);color:var(--sh-petrol);white-space:nowrap}
+.sh-pill--draft{background:#eef3f4;color:var(--sh-muted)}
+.sh-pill--review{background:#dff4f2;color:var(--sh-review)}
+.sh-pill--approved{background:#e3f4e8;color:var(--sh-approved)}
+.sh-pill--late{background:#fff1ec;color:var(--sh-late)}
+
+/* الحقول */
+.sh-input{min-height:46px;border:1px solid var(--sh-line);border-radius:var(--sh-radius-sm);padding:0 14px;background:#fff;color:var(--sh-ink);width:100%}
+.sh-input:focus{outline:2px solid var(--sh-teal);border-color:transparent}
+
+/* الحالات الفارغة */
+.sh-empty{background:#fff;border:1px dashed var(--sh-draft);border-radius:var(--sh-radius);padding:36px 18px;text-align:center;color:var(--sh-muted)}
+.sh-empty b{display:block;color:var(--sh-ink);margin-bottom:6px;font-size:17px}
+
+/* الحركة: خفيفة، وتُلغى عند تفضيل تقليل الحركة */
+@media (prefers-reduced-motion:no-preference){
+  .sh-card{transition:transform .2s ease,box-shadow .2s ease}
+  .sh-card:active{transform:scale(.99)}
+}
+
+/* التباعد: 8px كوحدة أساسية */
+@media (max-width:899px){
+  .sh-card{padding:14px}
+}
