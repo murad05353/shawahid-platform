@@ -43,10 +43,10 @@ async function renderClaudeTeacher(){
   const rec=w.TeacherFile.state.records[index];if(!rec)return;
   const template=templates[index],newStatus=(status||rec.status)==='review'?'ready':'draft';
   const payload={description:rec.desc||'',notes:rec.notes||'',status:newStatus,academic_year:year};
-  const existing=entries.find(x=>x.template_id===template.id&&x.academic_year===year);
   const previous=pendingSaves.get(template.id)||Promise.resolve();
   const task=previous.catch(()=>{}).then(async()=>{
   try{
+   const existing=entries.find(x=>x.template_id===template.id&&x.academic_year===year);
    const result=await portfolioRequest(existing?'PATCH':'POST',existing?'?id=eq.'+encodeURIComponent(existing.id):'',existing?payload:{...payload,teacher_id:teacher,school_id:school,template_id:template.id});
    if(!existing&&result[0])entries.push(result[0]);
    if(!result.length)throw Error('لم يؤكد الخادم حفظ السجل');
@@ -74,8 +74,8 @@ function renderClaudeTemplates(){
   w.ShawahidTemplates.setData({records:filtered.map((t,i)=>({id:t.id,no:i+1,title:t.title,status:'draft',desc:'',notes:'',files:[]})),canApprove:false,canExport:false,canUpload:false});
   if(!d.documentElement.dataset.shReadOnly){
    d.documentElement.dataset.shReadOnly='1';
-   const s=d.createElement('style');s.textContent='#dSeg{pointer-events:none!important;opacity:.65}#dDesc,#dNotes{background:#f7fafb!important;pointer-events:none!important}';d.head.append(s);
-   const note=d.createElement('p');note.id='shawahedNotice';note.textContent='قوالب أصلية من قاعدة البيانات — للعرض فقط. تعديل سجلات المعلم من ملف المعلم الإلكتروني.';note.style.cssText='padding:12px;text-align:center;background:#e6f6f5;color:#0c4a53;margin:0';d.body.prepend(note);
+   const s=d.createElement('style');s.textContent='#dSeg{display:none!important}#list .pill{display:none!important}#dDesc,#dNotes{background:#f7fafb!important;pointer-events:none!important}';d.head.append(s);
+   const note=d.createElement('p');note.id='shawahedNotice';note.textContent='هذه قوالب مرجعية وليست سجلات منشأة؛ لا توجد حالة إنجاز أو اعتماد للقالب. تحرير سجلات المعلم من ملف المعلم الإلكتروني.';note.style.cssText='padding:12px;text-align:center;background:#e6f6f5;color:#0c4a53;margin:0';d.body.prepend(note);
    d.addEventListener('click',ev=>{if(ev.target.closest('#dSeg button')){ev.preventDefault();ev.stopImmediatePropagation()}},true);
    d.addEventListener('click',()=>setTimeout(()=>resizeClaudeFrame(frame),80));d.addEventListener('input',()=>setTimeout(()=>resizeClaudeFrame(frame),80)); 
   }
