@@ -20,6 +20,9 @@ button,input,select,textarea{font:inherit}
 #book{flex:1;width:100%;max-width:880px;margin:0 auto;padding:16px 14px 24px}
 .pg{display:none;background:var(--c);border-radius:20px;box-shadow:0 1px 2px rgba(12,74,83,.06),0 10px 30px rgba(12,74,83,.08);border:1px solid var(--b);min-height:60vh;padding:26px 22px;animation:in .22s ease}
 .pg.on{display:block}
+.pg:not(.on){display:none!important}
+.pg.cover.on{display:flex;flex-direction:column}
+
 @keyframes in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
 .cover{background:linear-gradient(150deg,var(--p),#136b76);color:#fff;text-align:center;padding:48px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:70vh}
 .cover h1{font-size:26px;margin:8px 0 0}
