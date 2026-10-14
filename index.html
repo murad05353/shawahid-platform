@@ -49,12 +49,15 @@ async function renderClaudeTeacher(){
  lock();resizeClaudeFrame(frame);
  if(!d.documentElement.dataset.shBridge){
   d.documentElement.dataset.shBridge='1';
+  const mobileStyle=d.createElement('style');
+  mobileStyle.textContent='@media(max-width:650px){#book{padding:10px 8px 14px!important}.pg{padding:18px 14px!important;min-height:0!important}.cover{min-height:390px!important;padding:30px 14px!important}.div{min-height:330px!important}.bar{padding:10px 12px!important}.field input,.field textarea{max-width:100%;box-sizing:border-box}}';
+  d.head.append(mobileStyle);
   const observer=new w.MutationObserver(()=>{lock();resizeClaudeFrame(frame)});observer.observe(d.getElementById('book'),{subtree:true,childList:true});
   d.addEventListener('click',ev=>{if(!d.documentElement.dataset.shWritable&&ev.target.closest('.seg button')){ev.preventDefault();ev.stopImmediatePropagation()}},true);
   d.addEventListener('focusout',ev=>{const el=ev.target;if(el.matches('textarea[data-f]')&&d.documentElement.dataset.shWritable)w.parent.postMessage({type:'shawahed-save',index:Number(el.dataset.r),source:'teacher-file'},location.origin)},true);
   d.addEventListener('click',ev=>{const el=ev.target.closest('.seg button[data-st]');if(el&&d.documentElement.dataset.shWritable)w.parent.postMessage({type:'shawahed-save',index:Number(el.dataset.r),status:el.dataset.st,source:'teacher-file'},location.origin)},false);
  }
- d.documentElement.dataset.shWritable=writable?'1':'';
+ d.documentElement.dataset.shWritable=writable?'1':'';resizeClaudeFrame(frame);
  const pendingSaves=new Map();
  frame._saveTeacher=async(index,status)=>{
   if(!writable||!templates[index])return;
@@ -81,7 +84,7 @@ async function get(table,select='id'){const all=[];for(let offset=0;offset<10000
 e('claudeDashboard').addEventListener('load',renderClaudeOwner);e('claudeTeacher').addEventListener('load',renderClaudeTeacher);e('teacherFile').addEventListener('toggle',()=>{if(e('teacherFile').open)renderClaudeTeacher()});e('claudeTemplates').addEventListener('load',renderClaudeTemplates);document.querySelectorAll('[data-go-tab]').forEach(b=>b.onclick=()=>document.querySelector('[data-tab="'+b.dataset.goTab+'"]').click());document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['home','templates','schools','users','security'].forEach(id=>e(id).classList.toggle('hidden',id!==b.dataset.tab))});
 const roleNames={academic_vp:'وكيل الشؤون التعليمية',activity_leader:'رائد النشاط',executive_director:'المدير التنفيذي',principal:'مدير المدرسة',school_vp:'وكيل الشؤون المدرسية',student_counselor:'الموجّه الطلابي',student_vp:'وكيل شؤون الطلاب',teacher:'المعلم',platform_owner:'مالك المنصة'};const roleLabel=role=>roleNames[role]||role||'غير محدد';
 function resizeClaudeFrame(frame){
- try{const d=frame.contentDocument;if(!d)return;const height=Math.max(d.documentElement.scrollHeight,d.body?.scrollHeight||0,500);frame.style.height=Math.min(Math.max(height+28,600),1400)+'px'}catch(err){console.warn('تعذر قياس ارتفاع الإطار',err)}
+ try{const d=frame.contentDocument;if(!d)return;const height=Math.max(d.documentElement.scrollHeight,d.body?.scrollHeight||0,500);frame.style.height=Math.min(Math.max(height+28,420),3200)+'px'}catch(err){console.warn('تعذر قياس ارتفاع الإطار',err)}
 }
 function renderClaudeTemplates(){
  const frame=e('claudeTemplates');if(!frame||!templateData.length)return;
