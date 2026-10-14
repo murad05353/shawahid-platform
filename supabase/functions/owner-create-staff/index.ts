@@ -1,10 +1,10 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 const origin='https://murad05353.github.io';
-function reply(data:unknown,status=200){return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization,apikey,content-type','Access-Control-Allow-Methods':'POST,OPTIONS'}})}
+function reply(data:unknown,status=200){return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization,apikey,content-type','Access-Control-Allow-Methods':'GET,POST,OPTIONS'}})}
 const allowed=new Set(['executive_director','principal','academic_vp','student_vp','school_vp','student_counselor','activity_leader','teacher']);
 Deno.serve(async req=>{
  if(req.method==='OPTIONS')return reply({});
- if(req.method!=='POST')return reply({error:'Method not allowed'},405);
+ if(req.method!=='POST'&&req.method!=='GET')return reply({error:'Method not allowed'},405);
  const token=(req.headers.get('authorization')||'').replace(/^Bearer /,'');
  if(!token)return reply({error:'غير مصرح'},401);
  const url=Deno.env.get('SUPABASE_URL')!,anon=Deno.env.get('SUPABASE_ANON_KEY')!,secret=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -13,6 +13,22 @@ Deno.serve(async req=>{
  if(authError||!user)return reply({error:'جلسة غير صالحة'},401);
  const {data:owner,error:ownerError}=await admin.from('user_roles').select('role').eq('user_id',user.id).eq('role','platform_owner').maybeSingle();
  if(ownerError||!owner)return reply({error:'مالك المنصة فقط'},403);
+ if(req.method==='GET'){
+  const [pRes,rRes,uRes,oRes,sRes]=await Promise.all([
+   admin.from('profiles').select('user_id,full_name,org_id,school_id,active').order('created_at',{ascending:false}).limit(1000),
+   admin.from('user_roles').select('user_id,role').limit(1000),
+   admin.from('staff_usernames').select('user_id,username').limit(1000),
+   admin.from('organizations').select('id,name').limit(1000),
+   admin.from('schools').select('id,name').limit(1000)
+  ]);
+  if([pRes,rRes,uRes,oRes,sRes].some(x=>x.error))return reply({error:'تعذر تحميل حسابات المسؤولين'},500);
+  const roles=new Map((rRes.data||[]).filter(x=>x.role!=='platform_owner').map(x=>[x.user_id,x.role]));
+  const names=new Map((uRes.data||[]).map(x=>[x.user_id,x.username]));
+  const orgs=new Map((oRes.data||[]).map(x=>[x.id,x.name]));
+  const schools=new Map((sRes.data||[]).map(x=>[x.id,x.name]));
+  const users=(pRes.data||[]).filter(x=>roles.has(x.user_id)).map(x=>({full_name:x.full_name,username:names.get(x.user_id)||null,role:roles.get(x.user_id),org_name:orgs.get(x.org_id)||'',school_name:x.school_id?schools.get(x.school_id)||'':'جميع مدارس الجهة',active:x.active}));
+  return reply({ok:true,users});
+ }
  let p:any;try{p=await req.json()}catch{return reply({error:'طلب غير صالح'},400)}
  const {username,password,full_name,org_id,school_id,role}=p||{};
  if(typeof username!=='string'||!/^\d{10}$/.test(username)||typeof password!=='string'||password.length<8||typeof full_name!=='string'||full_name.trim().length<3||typeof org_id!=='string'||(role!=='executive_director'&&typeof school_id!=='string')||!allowed.has(role))return reply({error:'تحقق من الحقول'},400);
