@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>شواهد — ملف المعلم الإلكتروني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--p:#0c4a53;--p2:#083a42;--t:#2bb3ad;--tl:#e6f6f5;--bg:#eef3f4;--c:#fff;--tx:#13272c;--m:#637a80;--b:#e2ebed;--warn:#c2410c;--ok:#15803d}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{overflow-x:hidden;min-height:100dvh;display:flex;flex-direction:column}
+button,input,select,textarea{font:inherit}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));background:var(--p);color:#fff}
+.bar b{font-size:16px}
+.bar button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:10px;padding:9px 14px;cursor:pointer;min-height:40px}
+.prog{height:4px;background:var(--b)}
+.prog i{display:block;height:100%;width:0;background:var(--t);transition:width .3s}
+#book{flex:1;width:100%;max-width:880px;margin:0 auto;padding:16px 14px 24px}
+.pg{display:none;background:var(--c);border-radius:20px;box-shadow:0 1px 2px rgba(12,74,83,.06),0 10px 30px rgba(12,74,83,.08);border:1px solid var(--b);min-height:60vh;padding:26px 22px;animation:in .22s ease}
+.pg.on{display:block}
+@keyframes in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.cover{background:linear-gradient(150deg,var(--p),#136b76);color:#fff;text-align:center;padding:48px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:70vh}
+.cover h1{font-size:26px;margin:8px 0 0}
+.cover p{margin:0;color:#d4eeef}
+.cover .ring{width:120px;height:120px;position:relative;margin-top:16px}
+.cover .ring svg{width:120px;height:120px;transform:rotate(-90deg)}
+.cover .ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
+.logo{width:56px;height:56px;border-radius:16px;background:var(--t);display:grid;place-items:center;font-weight:700;font-size:22px;color:var(--p)}
+.div{min-height:52vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg,var(--tl),#fff);border-radius:14px}
+.div small{color:var(--m);letter-spacing:.5px}
+.div h2{font-size:28px;margin:8px 0;color:var(--p)}
+.div p{color:var(--m);margin:0}
+h2.t{font-size:20px;margin:0 0 14px;color:var(--p)}
+h3{font-size:16px;margin:22px 0 10px;color:var(--p)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:14px;color:var(--m)}
+.field input,.field textarea{border:1px solid var(--b);border-radius:12px;padding:12px;font-size:15px;color:var(--tx);background:#fff;min-height:48px;width:100%}
+.field textarea{min-height:110px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:2px solid var(--t);border-color:transparent}
+.idx{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.idx button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f7fafb;border:1px solid var(--b);border-radius:12px;padding:12px 14px;min-height:50px;cursor:pointer;color:var(--tx);text-align:start}
+.idx .dot{width:10px;height:10px;border-radius:50%;flex:none;background:#c9d6da}
+.idx .dot.review{background:var(--t)}
+.idx .dot.approved{background:var(--ok)}
+.idx .dot.draft{background:#c9d6da}
+.idx small{color:var(--m);font-size:12.5px}
+.rh small{color:var(--m)}
+.rh h2{font-size:22px;margin:4px 0 16px;color:var(--p)}
+.seg{display:flex;gap:6px;background:#f2f6f7;padding:5px;border-radius:14px;margin-bottom:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:110px;border:0;background:transparent;border-radius:10px;padding:10px;cursor:pointer;color:var(--m);min-height:44px}
+.seg button.on{background:#fff;color:var(--p);font-weight:600;box-shadow:0 1px 4px rgba(12,74,83,.12)}
+.note,.off{font-size:13px;color:var(--m);margin:6px 0 0}
+.off{background:#f7fafb;border:1px dashed #c9d6da;border-radius:12px;padding:14px;text-align:center}
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.fi{border:1px solid var(--b);border-radius:12px;overflow:hidden;background:#fff}
+.fi img{width:100%;height:110px;object-fit:cover;display:block}
+.fi .fb{padding:10px;font-size:13px}
+.fi a{color:var(--p);font-weight:600;text-decoration:none}
+.fi .tp{display:inline-block;font-size:11px;background:var(--tl);color:var(--p);padding:2px 8px;border-radius:99px;margin-bottom:4px}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.sum div{background:#f7fafb;border:1px solid var(--b);border-radius:14px;padding:14px;text-align:center}
+.sum b{display:block;font-size:24px;color:var(--p)}
+.sum small{color:var(--m);font-size:12.5px}
+.navf{position:sticky;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--b);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center;justify-content:space-between}
+.navf button{background:var(--p);color:#fff;border:0;border-radius:14px;padding:0 16px;min-height:50px;min-width:104px;cursor:pointer;font-weight:600}
+.navf button:disabled{background:#c9d6da;cursor:default}
+.jump{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;flex:1}
+.jump #pno{font-size:13px;color:var(--m)}
+.jump select{width:100%;max-width:260px;min-height:44px;border:1px solid var(--b);border-radius:12px;padding:0 10px;background:#fff;color:var(--tx)}
+@media (prefers-reduced-motion:reduce){.pg{animation:none}.prog i{transition:none}}
+@media (max-width:520px){.sum{grid-template-columns:1fr 1fr 1fr}.sum b{font-size:20px}.navf button{min-width:90px;padding:0 10px}}
+@media print{
+  .bar,.prog,.navf{display:none!important}
+  body{background:#fff}
+  #book{max-width:none;padding:0}
+  .pg{display:none;box-shadow:none;border:0;break-after:page;min-height:auto;animation:none}
+  body.printall .pg{display:block}
+  .seg,.field input,.field textarea{border:1px solid #999}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <b>ملف الإنجاز</b>
+  <button id="printBtn" type="button">طباعة</button>
+</header>
+<div class="prog" aria-hidden="true"><i id="progBar"></i></div>
+
+<main id="book"></main>
+
+<footer class="navf">
+  <button id="prev" type="button">السابق</button>
+  <div class="jump">
+    <span id="pno"></span>
+    <select id="jump" aria-label="الانتقال إلى صفحة"></select>
+  </div>
+  <button id="next" type="button">التالي</button>
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LBL = {draft:'مسودة', review:'جاهز للمراجعة', approved:'معتمد'};
+const SEC = ['القسم الأول','القسم الثاني','القسم الثالث','القسم الرابع'];
+
+// الحالة في الذاكرة فقط. للدمج: استدعِ TeacherFile.load(data) ببيانات المعلم وسجلاته الحقيقية من النظام.
+// الاعتماد والرفع يُفعَّلان فقط عند توفر الوظيفة في النظام.
+const S = {
+  teacher: {name:'', school:'', year:''},
+  approval: false,
+  uploads: false,
+  page: 0,
+  records: Array.from({length:24}, (_, i) => ({id:i+1, title:'السجل ' + (i+1), status:'draft', desc:'', notes:'', files:[]}))
+};
+
+function buildPages(){
+  const p = [{t:'cover'}, {t:'profile'}, {t:'index'}];
+  for (let s = 0; s < 4; s++){
+    p.push({t:'div', s});
+    for (let j = 0; j < 6; j++) p.push({t:'rec', r: s*6 + j});
+  }
+  p.push({t:'sum'});
+  return p;
+}
+const P = buildPages();
+
+const doneCount = () => S.records.filter(r => r.status === 'review' || r.status === 'approved').length;
+const pct = () => Math.round(doneCount() / 24 * 100);
+
+function coverHTML(){
+  const v = pct();
+  const C = 2*Math.PI*50;
+  return `<div class="pg cover"><div class="logo">ش</div>
+    <h1>${esc(S.teacher.name) || 'اسم المعلم'}</h1>
+    <p>${esc(S.teacher.school) || 'المدرسة'}</p>
+    <p>العام الدراسي ${esc(S.teacher.year) || '—'}</p>
+    <div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="10"/><circle cx="60" cy="60" r="50" fill="none" stroke="#2bb3ad" stroke-width="10" stroke-dasharray="${C*v/100} ${C}"/></svg><b>${v}%</b></div>
+    <p>نسبة الإنجاز</p></div>`;
+}
+
+function profileHTML(){
+  const t = S.teacher;
+  return `<div class="pg" data-i="1"><h2 class="t">الملف الشخصي</h2>
+    <label class="field">الاسم<input data-p="name" value="${esc(t.name)}" placeholder="الاسم الكامل"></label>
+    <label class="field">المدرسة<input data-p="school" value="${esc(t.school)}" placeholder="اسم المدرسة"></label>
+    <label class="field">العام الدراسي<input data-p="year" value="${esc(t.year)}" placeholder="مثال: 1447هـ"></label></div>`;
+}
+
+function indexHTML(){
+  const items = S.records.map((r, i) => {
+    const page = P.findIndex(p => p.t === 'rec' && p.r === i);
+    return `<li><button type="button" data-go="${page}"><span><span class="dot ${r.status}"></span> ${i+1}. ${esc(r.title)}</span><small>ص ${page+1}</small></button></li>`;
+  }).join('');
+  return `<div class="pg" data-i="2"><h2 class="t">فهرس السجلات</h2><ol class="idx">${items}</ol></div>`;
+}
+
+function divHTML(p){
+  return `<div class="pg" data-i="${P.indexOf(p)}"><div class="div"><small>${SEC[p.s]}</small><h2>السجلات ${p.s*6+1} إلى ${p.s*6+6}</h2><p>${p.s === 0 ? 'ابدأ من هنا' : ''}</p></div></div>`;
+}
+
+function recHTML(p, i){
+  const r = S.records[p.r];
+  const statuses = ['draft','review', ...(S.approval ? ['approved'] : [])];
+  const files = r.files.map(f => f.type === 'image'
+    ? `<div class="fi"><img src="${esc(f.url)}" alt="${esc(f.name)}"><div class="fb">${esc(f.name)}</div></div>`
+    : `<div class="fi"><div class="fb"><span class="tp">${f.type === 'pdf' ? 'PDF' : 'رابط'}</span><br><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a></div></div>`).join('');
+  return `<div class="pg" data-i="${i}">
+    <div class="rh"><small>السجل ${r.id} من 24</small><h2>${esc(r.title)}</h2></div>
+    <div class="seg">${statuses.map(s => `<button type="button" class="${r.status===s?'on':''}" data-st="${s}" data-r="${p.r}">${LBL[s]}</button>`).join('')}</div>
+    ${S.approval ? '' : '<p class="note">حالة "معتمد" تظهر عند توفر خاصية الاعتماد.</p>'}
+    <label class="field" style="margin-top:16px">وصف الإنجاز<textarea data-f="desc" data-r="${p.r}" placeholder="اكتب وصف ما أنجزته في هذا السجل">${esc(r.desc)}</textarea></label>
+    <label class="field">ملاحظات<textarea data-f="notes" data-r="${p.r}" placeholder="ملاحظات خاصة بالسجل">${esc(r.notes)}</textarea></label>
+    <h3>المرفقات والشواهد</h3>
+    ${S.uploads ? '' : '<div class="off">رفع الشواهد غير مفعّل بعد.</div>'}
+    ${files ? `<div class="files">${files}</div>` : (S.uploads ? '<div class="off">لا توجد شواهد مرفوعة لهذا السجل.</div>' : '')}
+  </div>`;
+}
+
+function sumHTML(){
+  const c = {draft:0, review:0, approved:0};
+  S.records.forEach(r => c[r.status]++);
+  return `<div class="pg" data-i="${P.length-1}"><h2 class="t">ملخص السجلات</h2>
+    <div class="sum">
+      <div><b>${c.draft}</b><small>مسودة</small></div>
+      <div><b>${c.review}</b><small>جاهز للمراجعة</small></div>
+      <div><b>${c.approved}</b><small>معتمد</small></div>
+    </div>
+    <p class="note">نسبة الإنجاز: ${pct()}%</p></div>`;
+}
+
+function renderAll(){
+  $('#book').innerHTML = P.map((p, i) => {
+    if (p.t === 'cover') return coverHTML().replace('class="pg cover"', `class="pg cover" data-i="0"`);
+    if (p.t === 'profile') return profileHTML();
+    if (p.t === 'index') return indexHTML();
+    if (p.t === 'div') return divHTML(p);
+    if (p.t === 'rec') return recHTML(p, i);
+    if (p.t === 'sum') return sumHTML();
+  }).join('');
+  show(S.page);
+  $('#progBar').style.width = pct() + '%';
+}
+
+function label(i){
+  const p = P[i];
+  if (p.t === 'cover') return 'الغلاف';
+  if (p.t === 'profile') return 'الملف الشخصي';
+  if (p.t === 'index') return 'الفهرس';
+  if (p.t === 'div') return SEC[p.s];
+  if (p.t === 'rec') return `السجل ${p.r+1}: ${S.records[p.r].title}`;
+  return 'الملخص';
+}
+
+function show(i){
+  S.page = Math.max(0, Math.min(P.length-1, i));
+  document.querySelectorAll('.pg').forEach(el => el.classList.toggle('on', Number(el.dataset.i) === S.page));
+  $('#pno').textContent = `صفحة ${S.page+1} من ${P.length}`;
+  $('#jump').value = S.page;
+  $('#prev').disabled = S.page === 0;
+  $('#next').disabled = S.page === P.length-1;
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+function fillJump(){
+  $('#jump').innerHTML = P.map((_, i) => `<option value="${i}">${i+1}. ${esc(label(i))}</option>`).join('');
+}
+
+// الأحداث
+$('#prev').onclick = () => show(S.page-1);
+$('#next').onclick = () => show(S.page+1);
+$('#jump').onchange = e => show(Number(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea,select')) return;
+  if (e.key === 'ArrowLeft') show(S.page+1);   // في الترتيب العربي، الصفحة التالية على اليسار
+  if (e.key === 'ArrowRight') show(S.page-1);
+});
+
+let tx = 0;
+const book = $('#book');
+book.addEventListener('touchstart', e => tx = e.touches[0].clientX, {passive:true});
+book.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) < 60) return;
+  show(dx < 0 ? S.page+1 : S.page-1);
+}, {passive:true});
+
+book.addEventListener('click', e => {
+  const go = e.target.closest('[data-go]');
+  if (go) return show(Number(go.dataset.go));
+  const st = e.target.closest('[data-st]');
+  if (st){
+    S.records[Number(st.dataset.r)].status = st.dataset.st;
+    renderAll();
+  }
+});
+book.addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset.f){
+    S.records[Number(el.dataset.r)][el.dataset.f] = el.value;
+  } else if (el.dataset.p){
+    S.teacher[el.dataset.p] = el.value;
+    const c = document.querySelector('.cover h1');
+    if (el.dataset.p === 'name' && c) c.textContent = el.value || 'اسم المعلم';
+  }
+});
+
+$('#printBtn').onclick = () => {
+  document.body.classList.add('printall');
+  window.print();
+};
+window.addEventListener('afterprint', () => document.body.classList.remove('printall'));
+
+// للدمج مع المنصة: TeacherFile.load({teacher, records, approval, uploads})
+window.TeacherFile = {
+  load(data){
+    if (data.teacher) Object.assign(S.teacher, data.teacher);
+    if (data.records) S.records = data.records;
+    if (typeof data.approval === 'boolean') S.approval = data.approval;
+    if (typeof data.uploads === 'boolean') S.uploads = data.uploads;
+    renderAll();
+    fillJump();
+  },
+  state: S
+};
+
+fillJump();
+renderAll();
+</script>
+</body>
+</html>
