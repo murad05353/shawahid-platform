@@ -20,11 +20,22 @@ Deno.serve(async req=>{
  if(schoolError||!school)return reply({error:'المدرسة لا تتبع الجهة'},400);
  // Internal auth identifier only; never shown to staff or accepted as a user-entered email.
  const internalId='staff-'+username+'@accounts.invalid';
- const {data:created,error:createError}=await admin.auth.admin.createUser({email:internalId,password,email_confirm:true,user_metadata:{staff_username:username,must_change_password:true}});
- if(createError)return reply({error:'تعذر إنشاء الحساب أو اسم المستخدم مستخدم'},409);
+ const {data:created,error:createError}=await admin.auth.admin.createUser({email:internalId,password,email_confirm:true,user_metadata:{must_change_password:true}});
+ if(createError||!created?.user)return reply({error:'تعذر إنشاء الحساب أو اسم المستخدم مستخدم'},409);
  const id=created.user.id;
+ const rollback=async()=>{
+  await admin.from('staff_usernames').delete().eq('user_id',id);
+  await admin.from('user_roles').delete().eq('user_id',id);
+  await admin.from('profiles').delete().eq('user_id',id);
+  await admin.auth.admin.deleteUser(id);
+ };
  const {error:profileError}=await admin.from('profiles').insert({user_id:id,org_id,school_id,full_name:full_name.trim(),active:true});
- const {error:roleError}=profileError?{error:null}:await admin.from('user_roles').insert({user_id:id,role});
- if(profileError||roleError){await admin.auth.admin.deleteUser(id);return reply({error:'تعذر إسناد الصلاحية'},500)}
+ if(profileError){await rollback();return reply({error:'تعذر إنشاء الملف الشخصي'},500)}
+ const {error:roleError}=await admin.from('user_roles').insert({user_id:id,role});
+ if(roleError){await rollback();return reply({error:'تعذر إسناد الصلاحية'},500)}
+ const {error:unameError}=await admin.from('staff_usernames').insert({username,user_id:id});
+ if(unameError){await rollback();return reply({error:'تعذر ربط اسم المستخدم'},500)}
+ const {error:auditError}=await admin.from('audit_log').insert({actor_id:user.id,org_id,entity_type:'staff_account',entity_id:id,action:'create_staff_account',details:{role,school_id}});
+ if(auditError){await rollback();return reply({error:'تعذر تسجيل العملية'},500)}
  return reply({ok:true,username,user_id:id});
 });
