@@ -32,23 +32,24 @@ async function renderClaudeTeacher(){
  if(templates.length!==24)return;
  const notice=()=>{let n=d.getElementById('realTemplateNotice');if(!n){n=d.createElement('p');n.id='realTemplateNotice';n.style.cssText='padding:12px;text-align:center;background:#e6f6f5;color:#0c4a53;margin:0';d.body.prepend(n)}return n};
  const records=templates.map((t,i)=>({id:i+1,title:t.title,status:'draft',desc:'',notes:'',files:[]}));
- let teacher=null,school=null,entries=[],year=String(new Date().getFullYear()),loadError=null;
+ let teacher=null,school=null,teacherName='',schoolName='',entries=[],year=String(new Date().getFullYear()),loadError=null;
  try{
   const auth=await fetch(URL+'/auth/v1/user',{headers:authHeaders()});if(!auth.ok)throw Error('انتهت جلسة الدخول');
-  const user=await auth.json();const profiles=await get('profiles','user_id,school_id,active');const roles=await get('user_roles','user_id,role');
+  const user=await auth.json();const profiles=await get('profiles','user_id,school_id,full_name,active');const roles=await get('user_roles','user_id,role');
   const profile=profiles.find(x=>x.user_id===user.id);
   if(profile?.active&&profile.school_id&&roles.some(x=>x.user_id===user.id&&x.role==='teacher')){
-   teacher=user.id;school=profile.school_id;
+   teacher=user.id;school=profile.school_id;teacherName=profile.full_name||'';
+   const schoolResponse=await fetch(URL+'/rest/v1/schools?select=name&id=eq.'+encodeURIComponent(school)+'&limit=1',{headers:authHeaders()});if(schoolResponse.ok){const schoolRows=await schoolResponse.json();schoolName=schoolRows[0]?.name||''}
    entries=await portfolioRequest('GET','?select=id,template_id,description,notes,status,academic_year&teacher_id=eq.'+encodeURIComponent(teacher)+'&school_id=eq.'+encodeURIComponent(school));
    const last=entries.slice().sort((a,b)=>String(b.academic_year).localeCompare(String(a.academic_year)))[0];if(last?.academic_year)year=last.academic_year;
    for(let i=0;i<templates.length;i++){const entry=entries.find(x=>x.template_id===templates[i].id&&x.academic_year===year);if(entry){records[i].status=entry.status==='ready'?'review':'draft';records[i].desc=entry.description||'';records[i].notes=entry.notes||''}}
   }
  }catch(err){console.warn('تعذر قراءة سجلات المعلم',err);loadError=err.message}
  if(gen!==teacherBridgeGeneration)return;
- w.TeacherFile.load({teacher:{name:teacher?'ملف المعلم':'',school:'',year},records,approval:false,uploads:false});
- const writable=!!teacher&&!!school;
+ w.TeacherFile.load({teacher:{name:teacherName,school:schoolName,year},records,approval:false,uploads:false});
+ const writable=!!teacher&&!!school&&!loadError;
  notice().textContent=loadError?'تعذر تحميل بيانات المعلم: '+loadError:writable?'ملف مرتبط بسجلاتك. يُحفظ الوصف والملاحظات عند مغادرة الحقل، وتُحفظ الحالة عند تغييرها. رفع الشواهد غير مفعّل.':'معاينة القوالب فقط — الحفظ متاح لحساب المعلم المرتبط بمدرسته.';
- const lock=()=>{if(!writable)d.querySelectorAll('input,textarea,.seg button').forEach(x=>{x.disabled=true;x.readOnly=true});else d.querySelectorAll('[data-p]').forEach(x=>{x.readOnly=true})};
+ const lock=()=>{if(!writable)d.querySelectorAll('input,textarea,.seg button').forEach(x=>{x.disabled=true;x.readOnly=true});else d.querySelectorAll('[data-p]').forEach(x=>{x.readOnly=true;x.disabled=true})};
  lock();resizeClaudeFrame(frame);
  if(!d.documentElement.dataset.shBridge){
   d.documentElement.dataset.shBridge='1';
